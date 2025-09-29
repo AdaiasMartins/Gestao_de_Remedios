@@ -1,6 +1,8 @@
 package ufpb.dsc.gestao_de_remedios.Order.Models;
 
 import jakarta.persistence.*;
+import ufpb.dsc.gestao_de_remedios.Medicine.Models.Medicine;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -17,7 +19,7 @@ public class OrderItem {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "medicine_id")
-    private ufpb.dsc.gestao_de_remedios.Medicine.Models.Medicine medicine;
+    private Medicine medicine;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

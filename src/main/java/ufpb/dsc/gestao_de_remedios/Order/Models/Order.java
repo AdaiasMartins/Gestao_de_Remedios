@@ -1,6 +1,9 @@
 package ufpb.dsc.gestao_de_remedios.Order.Models;
 
 import jakarta.persistence.*;
+import ufpb.dsc.gestao_de_remedios.Customer.Models.Customer;
+import ufpb.dsc.gestao_de_remedios.User.Models.User;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +19,11 @@ public class Order {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "customer_id")
-    private ufpb.dsc.gestao_de_remedios.Customer.Models.Customer customer;
+    private Customer customer;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "total", precision = 12, scale = 2, nullable = false)
     private BigDecimal total;
@@ -36,6 +43,8 @@ public class Order {
     public void setId(Long id) { this.id = id; }
     public ufpb.dsc.gestao_de_remedios.Customer.Models.Customer getCustomer() { return customer; }
     public void setCustomer(ufpb.dsc.gestao_de_remedios.Customer.Models.Customer customer) { this.customer = customer; }
+    public ufpb.dsc.gestao_de_remedios.User.Models.User getUser() { return user; }
+    public void setUser(ufpb.dsc.gestao_de_remedios.User.Models.User user) { this.user = user; }
     public BigDecimal getTotal() { return total; }
     public void setTotal(BigDecimal total) { this.total = total; }
     public LocalDateTime getCreatedAt() { return createdAt; }
