@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record OrderUpdateDTO(
-        @NotNull Long customerId,
-        @NotNull @Size(min = 1) List<OrderItemCreateDTO> items
+        @NotNull
+        Long customerId,
+        @NotNull
+        Long userId,
+        @NotNull @Size(min = 1)
+        List<OrderItemCreateDTO> items
 ) {}

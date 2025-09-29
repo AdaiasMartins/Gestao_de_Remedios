@@ -12,6 +12,7 @@ import ufpb.dsc.gestao_de_remedios.Order.Models.Order;
 import ufpb.dsc.gestao_de_remedios.Order.Models.OrderItem;
 import ufpb.dsc.gestao_de_remedios.Order.Repositories.OrderItemRepository;
 import ufpb.dsc.gestao_de_remedios.Order.Repositories.OrderRepository;
+import ufpb.dsc.gestao_de_remedios.User.Repositories.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,19 +26,24 @@ public class OrderService {
     private final OrderItemRepository itemRepository;
     private final CustomerRepository customerRepository;
     private final MedicineRepository medicineRepository;
+    private final UserRepository userRepository;
 
-    public OrderService(OrderRepository orderRepository, OrderItemRepository itemRepository, CustomerRepository customerRepository, MedicineRepository medicineRepository) {
+    public OrderService(OrderRepository orderRepository, OrderItemRepository itemRepository, CustomerRepository customerRepository, MedicineRepository medicineRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.itemRepository = itemRepository;
         this.customerRepository = customerRepository;
         this.medicineRepository = medicineRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public OrderResponseDTO create(OrderCreateDTO dto) {
         var customer = customerRepository.findById(dto.customerId()).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        var user = userRepository.findById(dto.userId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
         var order = new Order();
         order.setCustomer(customer);
+        order.setUser(user);
         order.setTotal(BigDecimal.ZERO);
         order = orderRepository.save(order);
 
@@ -78,8 +84,10 @@ public class OrderService {
     public OrderResponseDTO update(Long id, OrderUpdateDTO dto) {
         var order = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Order not found"));
         var customer = customerRepository.findById(dto.customerId()).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        var user = userRepository.findById(dto.userId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         order.setCustomer(customer);
+        order.setUser(user);
         itemRepository.deleteAll(order.getItems());
         order.getItems().clear();
 

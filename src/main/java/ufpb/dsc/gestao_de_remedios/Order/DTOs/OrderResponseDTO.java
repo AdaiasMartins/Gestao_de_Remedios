@@ -7,6 +7,7 @@ import java.util.List;
 public record OrderResponseDTO(
         Long id,
         Long customerId,
+        Long userId,
         BigDecimal total,
         LocalDateTime createdAt,
         List<OrderItemResponseDTO> items
