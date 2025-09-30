@@ -2,6 +2,8 @@ package ufpb.dsc.gestao_de_remedios.Medicine.Services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ufpb.dsc.gestao_de_remedios.Medicine.DTOs.MedicineCreateDTO;
@@ -29,9 +31,13 @@ public class MedicineService {
     }
 
     @Transactional(readOnly = true)
-    public List<MedicineResponseDTO> list() {
-        return repository.findAll().stream().map(MedicineMapper::toDto).toList();
+    public Page<MedicineResponseDTO> list(String name, Pageable pageable) {
+        Page<Medicine> page = (name == null || name.isBlank())
+                ? repository.findAll(pageable)
+                : repository.findByNameContainingIgnoreCase(name, pageable);
+        return page.map(MedicineMapper::toDto);
     }
+
 
     @Transactional(readOnly = true)
     public MedicineResponseDTO get(Long id) {

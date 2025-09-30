@@ -1,7 +1,8 @@
 package ufpb.dsc.gestao_de_remedios.Medicine.Controllers;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ufpb.dsc.gestao_de_remedios.Medicine.DTOs.MedicineCreateDTO;
@@ -9,11 +10,8 @@ import ufpb.dsc.gestao_de_remedios.Medicine.DTOs.MedicineResponseDTO;
 import ufpb.dsc.gestao_de_remedios.Medicine.DTOs.MedicineUpdateDTO;
 import ufpb.dsc.gestao_de_remedios.Medicine.Services.MedicineService;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/medicines")
-@RequiredArgsConstructor
 public class MedicineController {
 
     private final MedicineService service;
@@ -29,8 +27,10 @@ public class MedicineController {
     }
 
     @GetMapping
-    public List<MedicineResponseDTO> list() {
-        return service.list();
+    public Page<MedicineResponseDTO> list(
+            @RequestParam(required = false) String name,
+            Pageable pageable) {
+        return service.list(name, pageable);
     }
 
     @GetMapping("/{id}")

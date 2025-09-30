@@ -1,7 +1,7 @@
 package ufpb.dsc.gestao_de_remedios.User.Services;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ufpb.dsc.gestao_de_remedios.User.DTOs.*;
@@ -12,19 +12,22 @@ import ufpb.dsc.gestao_de_remedios.User.Repositories.UserRepository;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository repository;
 
-    public UserService(UserRepository repo) {
+    private final PasswordEncoder encoder;
+
+    public UserService(UserRepository repo, PasswordEncoder encoder) {
         this.repository = repo;
+        this.encoder = encoder;
     }
 
     @Transactional
     public UserResponseDTO create(UserCreateDTO dto) {
-        User saved = repository.save(UserMapper.toEntity(dto));
-        return UserMapper.toDto(saved);
+        var u = UserMapper.toEntity(dto);
+        u.setPassword(encoder.encode(u.getPassword()));
+        return UserMapper.toDto(repository.save(u));
     }
 
     @Transactional(readOnly = true)
@@ -40,12 +43,11 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO dto) {
-        User u = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        var u = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
         UserMapper.updateEntity(u, dto);
-        User updated = repository.save(u);
-        return UserMapper.toDto(updated);
+        u.setPassword(encoder.encode(u.getPassword()));
+        return UserMapper.toDto(repository.save(u));
     }
-
     @Transactional
     public void delete(Long id) {
         if (!repository.existsById(id)) throw new EntityNotFoundException("User not found");

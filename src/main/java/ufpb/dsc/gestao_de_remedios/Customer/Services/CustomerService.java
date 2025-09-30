@@ -12,7 +12,6 @@ import ufpb.dsc.gestao_de_remedios.Customer.Repositories.CustomerRepository;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository repository;
