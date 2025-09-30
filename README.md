@@ -1,65 +1,81 @@
-# Descrição
+````markdown
+# Guia de Execução do Projeto
 
-O objetivo deste sistema é o desenvolvimento de uma **API REST** para gerenciar o cadastro, consulta e controle de **remédios, clientes e pedidos**.  
-A aplicação visa oferecer uma solução eficiente para o gerenciamento de farmácias, clínicas e plataformas online de medicamentos, automatizando processos como:
+Este guia fornece os passos necessários para rodar a aplicação "gestao_de_remedios" localmente.
 
-- Cadastro de remédios  
-- Registro de clientes  
-- Controle de vendas e pedidos  
-- Autenticação de usuários  
+## Pré-requisitos
 
-A API permitirá que farmácias e plataformas online gerenciem seu catálogo de medicamentos, associando informações como **nome, categoria, fabricante e preço**, além de possibilitar a realização de pedidos por clientes.  
+Certifique-se de que você tem o seguinte instalado na sua máquina:
 
-Cada pedido incluirá um ou mais itens de remédios, com a quantidade e o preço unitário, permitindo um controle eficiente das transações.  
+-   [Docker](https://www.docker.com/products/docker-desktop) e [Docker Compose](https://docs.docker.com/compose/install/)
+-   [Java Development Kit (JDK) 17](https://www.oracle.com/java/technologies/downloads/#jdk17) ou superior
+-   Maven Wrapper (`mvnw` e `mvnw.cmd`), que já estão incluídos no projeto.
 
-Além disso, a API será responsável pela **autenticação de usuários**, com papéis:  
+## Passos para Executar a Aplicação
 
-- **ADMIN**: pode criar e gerenciar usuários, clientes e remédios.  
-- **Atendente**: pode apenas gerenciar pedidos e clientes.  
+### Passo 1: Iniciar o Banco de Dados
 
-A solução fornecerá um controle completo de remédios e pedidos, permitindo também a **consulta de dados sobre remédios cadastrados, clientes e pedidos realizados**, o que pode ser integrado com sistemas gráficos (web ou mobile) ou utilizados como base para futuras funcionalidades.  
+A aplicação depende de um banco de dados PostgreSQL. O arquivo `docker-compose.yaml` facilita a configuração e execução do banco de dados em um contêiner Docker.
 
----
+Abra o terminal na raiz do projeto e execute o seguinte comando para iniciar o serviço do PostgreSQL e o pgAdmin:
 
-## Entidades
+```bash
+docker-compose up -d
+````
 
-- **Usuários**
-- **Clientes**
-- **Remédios**
-- **Pedidos**
+Aguarde alguns segundos para que os contêineres sejam iniciados e o banco de dados esteja pronto. Você pode verificar o status com o comando `docker-compose ps`.
 
----
+### Passo 2: Construir o Projeto
 
-## Definição inicial das rotas
+Utilize o Maven Wrapper (`mvnw`) para construir o projeto, o que garantirá que todas as dependências sejam baixadas e o pacote executável seja criado.
 
-### Usuários
-- `GET /users` – Lista todos os usuários cadastrados (**somente para ADMIN**)  
-- `POST /users` – Cria um novo usuário (**somente para ADMIN**)  
-- `GET /users/{id}` – Retorna os detalhes de um usuário específico  
-- `PUT /users/{id}` – Atualiza os dados de um usuário específico  
-- `DELETE /users/{id}` – Exclui ou desativa um usuário (**somente para ADMIN**)  
+Execute o seguinte comando no terminal, na raiz do projeto:
 
-### Clientes
-- `GET /customers` – Lista todos os clientes cadastrados  
-- `POST /customers` – Cria um novo cliente  
-- `GET /customers/{id}` – Retorna os detalhes de um cliente específico  
-- `PUT /customers/{id}` – Atualiza as informações de um cliente  
-- `DELETE /customers/{id}` – Exclui ou desativa um cliente  
+```bash
+# Para Linux/macOS
+./mvnw clean install
 
-### Remédios
-- `GET /medicines` – Lista todos os remédios cadastrados  
-- `POST /medicines` – Cria um novo remédio  
-- `GET /medicines/{id}` – Retorna os detalhes de um remédio específico  
-- `PUT /medicines/{id}` – Atualiza os dados de um remédio  
-- `DELETE /medicines/{id}` – Exclui ou desativa um remédio  
+# Para Windows
+mvnw.cmd clean install
+```
 
-### Pedidos
-- `GET /orders` – Lista todos os pedidos realizados  
-- `POST /orders` – Cria um novo pedido, incluindo remédios e quantidades  
-- `GET /orders/{id}` – Retorna os detalhes de um pedido específico  
-- `PUT /orders/{id}` – Atualiza o status de um pedido (ex: **confirmado, pago, cancelado**)  
-- `DELETE /orders/{id}` – Exclui um pedido  
+Este comando criará um arquivo JAR executável no diretório `target/`.
 
-### Autenticação
-- `POST /auth/login` – Realiza o login do usuário e retorna o token para autenticação  
-- `GET /auth/me` – Retorna os dados do usuário autenticado  
+### Passo 3: Configurar o Banco de Dados (Opcional)
+
+A aplicação está configurada para se conectar a um banco de dados local com as seguintes credenciais, conforme o arquivo `application.properties`:
+
+  - **URL:** `jdbc:postgresql://localhost:5432/remediosdb`
+  - **Usuário:** `postgres`
+  - **Senha:** `postgres`
+
+O `docker-compose.yaml` já configura o PostgreSQL com estas credenciais, portanto este passo não é necessário, a menos que você queira usar um banco de dados diferente.
+
+### Passo 4: Executar a Aplicação
+
+Depois que o banco de dados estiver em execução e o projeto estiver construído, você pode iniciar a aplicação Spring Boot.
+
+Execute o seguinte comando no terminal, na raiz do projeto:
+
+```bash
+# Para Linux/macOS
+./mvnw spring-boot:run
+
+# Para Windows
+mvnw.cmd spring-boot:run
+```
+
+A aplicação será iniciada e estará disponível na porta `8080`, conforme especificado no arquivo `application.properties`.
+
+### Passo 5: Testar a API
+
+A API agora está em execução. Você pode interagir com ela usando um cliente HTTP como o Postman, Insomnia ou cURL.
+
+Aqui estão algumas rotas de exemplo, conforme documentado no `README.md`:
+
+  - **Login:** `POST /api/login`
+  - **Usuários:** `GET /users` (requer autenticação)
+  - **Clientes:** `POST /customers`
+  - **Remédios:** `GET /medicines`
+
+Você pode acessar a documentação do Swagger UI em `http://localhost:8080/swagger-ui.html` para ver todos os endpoints disponíveis.
